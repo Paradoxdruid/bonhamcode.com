@@ -90,56 +90,35 @@ body_contents = html.Div(
 )
 
 # Create app layout
-nav_text = dbc.NavItem(dbc.NavLink("Designed by", disabled=True, href="#"))
+nav_text = dbc.NavLink("Designed by", disabled=True, href="#")  # dbc.NavItem()
 
-nav_item = dbc.NavItem(
-    dbc.NavLink("Dr. Andrew J. Bonham", href="https://github.com/Paradoxdruid")
-)
+nav_item = dbc.NavLink("Dr. Andrew J. Bonham", href="https://github.com/Paradoxdruid")
+# dbc.NavItem()
 
-nav_bar = dbc.NavbarSimple(
-    children=[nav_text, nav_item],
-    brand="CHE Enrollment Statistics -- Spring 2021",
-    # brand_href="#",
-    brand_style={"font-weight": "bold"},
-    sticky="top",
-    className="mb-2",
-    fluid=True,
-)
+BONHAM_LOGO = MyApp.get_asset_url('bonham_logo.png')
 
-BONHAM_LOGO = "bonham_logo.png"
-
-side_bar = dbc.Row(
+side_bar = dbc.Nav(
     [
-        dbc.Col(dbc.NavItem(dbc.NavLink("Designed by", disabled=True, href="#"))),
-        dbc.Col(
-            dbc.NavItem(
-                dbc.NavLink(
-                    "Dr. Andrew J. Bonham", href="https://github.com/Paradoxdruid"
-                )
-            ),
-            width="auto",
-        ),
+        dbc.NavItem(nav_text),
+        dbc.NavItem(nav_item),
     ],
-    no_gutters=True,
-    className="ml-auto flex-nowrap mt-3 mt-md-0",
-    align="center",
+    fill=True,
+    className="ml-auto",
 )
 
 navbar = dbc.Navbar(
     [
         dbc.Row(
             [
-                dbc.Col(html.Img(src=BONHAM_LOGO, height="30px")),
-                dbc.Col(dbc.NavbarBrand("Bonham Code", className="ml-2")),
+                dbc.Col(html.Img(src=BONHAM_LOGO, height="60px"), className="mr-0", width=4),
+                dbc.Col(dbc.NavbarBrand("Bonham Code", className="ml-0"), width=8),
             ],
             align="center",
-            no_gutters=True,
         ),
         dbc.NavbarToggler(id="navbar-toggler"),
         dbc.Collapse(side_bar, id="navbar-collapse", navbar=True),
     ],
-    color="dark",
-    dark=True,
+    sticky="top",
 )
 
 
@@ -148,7 +127,7 @@ bottom_bar = dbc.NavbarSimple(
         dbc.NavLink(
             "MSU Denver Covid Tracker", href="https://msu-covid-tracker.herokuapp.com"
         ),
-        dbc.NavLink("Bonham Code projects", href="https://bonhamcode.com"),
+        # dbc.NavLink("Bonham Code projects", href="https://bonhamcode.com"),
         dbc.NavLink("Dr. Bonham's Research Lab", href="https://www.bonhamlab.com"),
     ],
     brand="Other Projects:",
@@ -170,15 +149,16 @@ MyApp.layout = html.Div(
                             className="m-3",
                         ),
                         width=12,
-                        style={
-                            "min-width": "750px",
-                            "max-width": "1400px",
-                        },
+                        # style={
+                        #     "min-width": "750px",
+                        #     "max-width": "1400px",
+                        # },
                     ),
+                    className="mx-auto",
                 ),
             ],
         ),
-        footer,
+        bottom_bar,
     ],
 )
 
