@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import dash
+
 # import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
-
+from dash.dependencies import Input, Output, State
 
 MyApp = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 
@@ -77,11 +78,112 @@ dose_card = make_card(
 )
 
 body_contents = html.Div(
-    [dbc.Row([dbc.Col(buffer_card), dbc.Col(menten_card), dbc.Col(dose_card), ], ), ],
+    [
+        dbc.Row(
+            [
+                dbc.Col(buffer_card),
+                dbc.Col(menten_card),
+                dbc.Col(dose_card),
+            ],
+        ),
+    ],
+)
+
+# Create app layout
+nav_text = dbc.NavItem(dbc.NavLink("Designed by", disabled=True, href="#"))
+
+nav_item = dbc.NavItem(
+    dbc.NavLink("Dr. Andrew J. Bonham", href="https://github.com/Paradoxdruid")
+)
+
+nav_bar = dbc.NavbarSimple(
+    children=[nav_text, nav_item],
+    brand="CHE Enrollment Statistics -- Spring 2021",
+    # brand_href="#",
+    brand_style={"font-weight": "bold"},
+    sticky="top",
+    className="mb-2",
+    fluid=True,
+)
+
+BONHAM_LOGO = "bonham_logo.png"
+
+side_bar = dbc.Row(
+    [
+        dbc.Col(dbc.NavItem(dbc.NavLink("Designed by", disabled=True, href="#"))),
+        dbc.Col(
+            dbc.NavItem(
+                dbc.NavLink(
+                    "Dr. Andrew J. Bonham", href="https://github.com/Paradoxdruid"
+                )
+            ),
+            width="auto",
+        ),
+    ],
+    no_gutters=True,
+    className="ml-auto flex-nowrap mt-3 mt-md-0",
+    align="center",
+)
+
+navbar = dbc.Navbar(
+    [
+        dbc.Row(
+            [
+                dbc.Col(html.Img(src=BONHAM_LOGO, height="30px")),
+                dbc.Col(dbc.NavbarBrand("Bonham Code", className="ml-2")),
+            ],
+            align="center",
+            no_gutters=True,
+        ),
+        dbc.NavbarToggler(id="navbar-toggler"),
+        dbc.Collapse(side_bar, id="navbar-collapse", navbar=True),
+    ],
+    color="dark",
+    dark=True,
 )
 
 
-MyApp.layout = dbc.Container(
+bottom_bar = dbc.NavbarSimple(
+    children=[
+        dbc.NavLink(
+            "MSU Denver Covid Tracker", href="https://msu-covid-tracker.herokuapp.com"
+        ),
+        dbc.NavLink("Bonham Code projects", href="https://bonhamcode.com"),
+        dbc.NavLink("Dr. Bonham's Research Lab", href="https://www.bonhamlab.com"),
+    ],
+    brand="Other Projects:",
+    sticky="bottom",
+    className="mt-2",
+    fluid=True,
+)
+
+MyApp.layout = html.Div(
+    [
+        navbar,
+        dbc.Container(
+            fluid=True,
+            children=[
+                dbc.Row(
+                    dbc.Col(
+                        html.Div(
+                            [body_contents],
+                            className="m-3",
+                        ),
+                        width=12,
+                        style={
+                            "min-width": "750px",
+                            "max-width": "1400px",
+                        },
+                    ),
+                ),
+            ],
+        ),
+        footer,
+    ],
+)
+
+
+old_layout = dbc.Container(
     [
         dbc.Row(
             [
@@ -110,6 +212,18 @@ MyApp.layout = dbc.Container(
     className="bg-secondary",
     style={"min-height": "100vh"},
 )
+
+
+# add callback for toggling the collapse on small screens
+@MyApp.callback(
+    Output("navbar-collapse", "is_open"),
+    [Input("navbar-toggler", "n_clicks")],
+    [State("navbar-collapse", "is_open")],
+)
+def toggle_navbar_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
 
 
 if __name__ == "__main__":
