@@ -44,7 +44,7 @@ yaxis_label = dbc.FormGroup(
     className="mr-3",
 )
 
-input_form = dbc.Col([dbc.Form([xaxis_label, yaxis_label,], inline=True,),],)
+input_form = dbc.Col([dbc.Form([xaxis_label, yaxis_label], inline=True)])
 
 row_button = dbc.Col(
     [
@@ -66,7 +66,7 @@ table_input = dbc.Col(
                     columns=(
                         [{"id": "X", "name": "X"}]
                         + [{"id": "Y1", "name": "Y1"}]
-                        + [{"id": "Y2", "name": "Y2", "deletable": True,}]
+                        + [{"id": "Y2", "name": "Y2", "deletable": True}]
                     ),
                     data=[
                         {"X": 0, "Y1": 0, "Y2": 1},
@@ -107,9 +107,8 @@ card_header = dbc.CardHeader(
 graph_output = dbc.Col(
     [
         dbc.Card(
-            [dcc.Graph(id="adding-rows-graph",
-                       config={"displayModeBar": True},
-                ),], className="mt-3 border-primary p-1",
+            [dcc.Graph(id="adding-rows-graph", config={"displayModeBar": True})],
+            className="mt-3 border-primary p-1",
         ),
     ]
 )
@@ -288,4 +287,3 @@ def update_graph(rows, columns, x_title, y_title):
 # Main magic
 if __name__ == "__main__":
     app.run_server(debug=True)
-
