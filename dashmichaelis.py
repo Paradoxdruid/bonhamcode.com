@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/home/drparadox/opt/python-3.8.1/bin/python3
 
 """
 Dash web app for fitting Michaelis-Menten enzyme kinetics.
@@ -27,17 +27,18 @@ INITIAL_DATA: List[Dict[str, float]] = [
     {"X": 5.0, "Y1": 12.0, "Y2": 13.0},
 ]
 
-INITIAL_COLUMNS: List[Dict[str, Union[str, bool]]] = (
-    [{"id": "X", "name": "X"}]
-    + [{"id": "Y1", "name": "Y1"}]
-    + [{"id": "Y2", "name": "Y2", "deletable": True}]
-)
+INITIAL_COLUMNS: List[Dict[str, Union[str, bool]]] = [
+    {"id": "X", "name": "X"},
+    {"id": "Y1", "name": "Y1"},
+    {"id": "Y2", "name": "Y2", "deletable": True},
+]
 
 # Initialize app
 app: dash.Dash = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 
 server: Any = app.server  # server initialization for passenger wsgi
 
+# Layout Widgets
 xaxis_label: dbc.FormGroup = dbc.FormGroup(
     [
         dbc.Label("X-axis label:", className="mr-2"),
@@ -67,7 +68,6 @@ row_button: dbc.Col = dbc.Col(
     ]
 )
 
-
 entry_table: dash_table.DataTable = dash_table.DataTable(
     id="adding-rows-table",
     columns=INITIAL_COLUMNS,
@@ -83,7 +83,6 @@ entry_table: dash_table.DataTable = dash_table.DataTable(
     style_cell={"font-family": "lato"},
     style_header={"font-weight": "bold"},
 )
-
 
 table_input: dbc.Col = dbc.Col(
     [
@@ -110,7 +109,6 @@ graph_output: dbc.Col = dbc.Col(
         ),
     ]
 )
-
 
 app.layout = dbc.Container(
     [
@@ -198,7 +196,7 @@ def fit_data(
     """
     variable_guesses = [numpy.max(y), numpy.min(y)]  # FIXME: better guesses!
     variables, cov = curve_fit(equation, x, y, p0=variable_guesses, sigma=y_std)
-    var_errors = numpy.sqrt(numpy.diag(cov))
+    var_errors: numpy.ndarray = numpy.sqrt(numpy.diag(cov))
 
     return (variables, var_errors)
 
@@ -216,10 +214,10 @@ def find_r_squared(
     Returns:
         float: r squared value
     """
-    residuals = y - equation(x, *variables)
-    ss_res = numpy.sum(residuals ** 2)
-    ss_tot = numpy.sum((y - numpy.mean(y)) ** 2)
-    r_squared = 1 - (ss_res / ss_tot)
+    residuals: numpy.ndarray = y - equation(x, *variables)
+    ss_res: float = numpy.sum(residuals ** 2)
+    ss_tot: float = numpy.sum((y - numpy.mean(y)) ** 2)
+    r_squared: float = 1 - (ss_res / ss_tot)
 
     return r_squared
 
@@ -255,7 +253,7 @@ def generate_plot2(x_range: numpy.ndarray, variables: numpy.ndarray) -> go.Scatt
     return go.Scatter(x=x_range, y=equation(x_range, *variables), mode="lines")
 
 
-def generate_layout(
+def generate_graph_layout(
     r_squared: float,
     variables: numpy.ndarray,
     var_errors: numpy.ndarray,
@@ -348,7 +346,7 @@ def add_row(
         List[Dict[str, float]]: rows with an additional row
     """
     if n_clicks > 0:
-        rows.append({c["id"]: 0 for c in columns})
+        rows.append({c["id"]: 0.0 for c in columns})
     return rows
 
 
@@ -370,8 +368,8 @@ def update_columns(
         List[Dict[str, Union[str, bool]]]: existing columns with new column appended
     """
     if n_clicks > 0:
-        count = 2 + n_clicks
-        counter = f"Y{count}"
+        count: int = 2 + n_clicks
+        counter: str = f"Y{count}"
         existing_columns.append(
             {"id": counter, "name": counter, "editable": True, "deletable": True}
         )
@@ -407,27 +405,29 @@ def update_graph(
 
     df = pandas.DataFrame(rows, columns=[c["name"] for c in columns])
 
-    x = df["X"].astype(float).values
+    x: numpy.ndarray = df["X"].astype(float).values
 
-    ys = df.iloc[:, 1:]  # all but X column
+    ys: pandas.DataFrame = df.iloc[:, 1:]  # all but X column
     y, y_std = clean_up_y_data(ys)
 
     variables, var_errors = fit_data(x, y, y_std)
 
-    r_squared = find_r_squared(x, y, variables)
+    r_squared: float = find_r_squared(x, y, variables)
 
     # Calculate useful range for plotting
-    DEFAULT_INCREMENTS = 100
-    x_range = numpy.arange(
+    DEFAULT_INCREMENTS: int = 100
+    x_range: numpy.ndarray = numpy.arange(
         numpy.min(x), numpy.max(x), abs(numpy.max(x) / DEFAULT_INCREMENTS)
     )
 
-    # Return plots and a data layout
-    plot1 = generate_plot1(x, y, y_std)
-    plot2 = generate_plot2(x_range, variables)
-    plot_data = [plot1, plot2]
+    # Return plots and a graph data layout
+    plot1: go.Scatter = generate_plot1(x, y, y_std)
+    plot2: go.Scatter = generate_plot2(x_range, variables)
+    plot_data: List[go.Scatter] = [plot1, plot2]
 
-    layout = generate_layout(r_squared, variables, var_errors, x_title, y_title)
+    layout: go.Layout = generate_graph_layout(
+        r_squared, variables, var_errors, x_title, y_title
+    )
 
     return {"data": plot_data, "layout": layout}
 
