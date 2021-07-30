@@ -6,29 +6,39 @@ Dash web app for fitting Michaelis-Menten enzyme kinetics.
 
 # Imports
 import dash
-from dash.dependencies import Input, Output, State
-import dash_table
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_bootstrap_components as dbc
-import pandas
+import dash_table
 import numpy
-from scipy.optimize import curve_fit
+import pandas
 import plotly.graph_objs as go
+from dash.dependencies import Input, Output, State
+from scipy.optimize import curve_fit
+from typing import Any, Tuple, Dict, List, Union
 
-# from flask_caching import Cache
 
+INITIAL_DATA: List[Dict[str, float]] = [
+    {"X": 0.0, "Y1": 0.0, "Y2": 1.0},
+    {"X": 1.0, "Y1": 8.0, "Y2": 7.0},
+    {"X": 2.0, "Y1": 9.0, "Y2": 10.0},
+    {"X": 3.0, "Y1": 10.0, "Y2": 11.0},
+    {"X": 4.0, "Y1": 11.0, "Y2": 12.0},
+    {"X": 5.0, "Y1": 12.0, "Y2": 13.0},
+]
+
+INITIAL_COLUMNS: List[Dict[str, Union[str, bool]]] = (
+    [{"id": "X", "name": "X"}]
+    + [{"id": "Y1", "name": "Y1"}]
+    + [{"id": "Y2", "name": "Y2", "deletable": True}]
+)
 
 # Initialize app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
+app: dash.Dash = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 
-server = app.server  # server initialization for passenger wsgi
+server: Any = app.server  # server initialization for passenger wsgi
 
-# cache = Cache(
-#     server, config={"CACHE_TYPE": "filesystem", "CACHE_DIR": "cache-directory"}
-# )
-
-xaxis_label = dbc.FormGroup(
+xaxis_label: dbc.FormGroup = dbc.FormGroup(
     [
         dbc.Label("X-axis label:", className="mr-2"),
         dbc.Input(type="x-axis", id="x-axis", value="Concentration"),
@@ -36,7 +46,7 @@ xaxis_label = dbc.FormGroup(
     className="mr-3",
 )
 
-yaxis_label = dbc.FormGroup(
+yaxis_label: dbc.FormGroup = dbc.FormGroup(
     [
         dbc.Label("Y-axis label:", className="mr-2"),
         dbc.Input(type="y-axis", id="y-axis", value="Enzyme Activity"),
@@ -44,9 +54,9 @@ yaxis_label = dbc.FormGroup(
     className="mr-3",
 )
 
-input_form = dbc.Col([dbc.Form([xaxis_label, yaxis_label], inline=True)])
+input_form: dbc.Col = dbc.Col([dbc.Form([xaxis_label, yaxis_label], inline=True)])
 
-row_button = dbc.Col(
+row_button: dbc.Col = dbc.Col(
     [
         dbc.Button(
             "Add Column",
@@ -57,25 +67,14 @@ row_button = dbc.Col(
     ]
 )
 
-table_input = dbc.Col(
+table_input: dbc.Col = dbc.Col(
     [
         dbc.Card(
             [
                 dash_table.DataTable(
                     id="adding-rows-table",
-                    columns=(
-                        [{"id": "X", "name": "X"}]
-                        + [{"id": "Y1", "name": "Y1"}]
-                        + [{"id": "Y2", "name": "Y2", "deletable": True}]
-                    ),
-                    data=[
-                        {"X": 0, "Y1": 0, "Y2": 1},
-                        {"X": 1, "Y1": 8, "Y2": 7},
-                        {"X": 2, "Y1": 9, "Y2": 10},
-                        {"X": 3, "Y1": 10, "Y2": 11},
-                        {"X": 4, "Y1": 11, "Y2": 12},
-                        {"X": 5, "Y1": 12, "Y2": 13},
-                    ],
+                    columns=INITIAL_COLUMNS,
+                    data=INITIAL_DATA,
                     editable=True,
                     row_deletable=True,
                     style_table={
@@ -94,7 +93,7 @@ table_input = dbc.Col(
     ],
 )
 
-card_header = dbc.CardHeader(
+card_header: dbc.CardHeader = dbc.CardHeader(
     [
         html.H3("Bonham Code: Michaelis-Menten Fitting", className="card-title",),
         html.H6(
@@ -104,7 +103,7 @@ card_header = dbc.CardHeader(
     ]
 )
 
-graph_output = dbc.Col(
+graph_output: dbc.Col = dbc.Col(
     [
         dbc.Card(
             [dcc.Graph(id="adding-rows-graph", config={"displayModeBar": True})],
@@ -151,86 +150,64 @@ app.layout = dbc.Container(
 
 
 # Functions
-@app.callback(
-    Output("adding-rows-table", "data"),
-    [Input("editing-rows-button", "n_clicks")],
-    [State("adding-rows-table", "data"), State("adding-rows-table", "columns")],
-)
-def add_row(n_clicks, rows, columns):
-    if n_clicks > 0:
-        rows.append({c["id"]: 0 for c in columns})
-    return rows
-
-
-@app.callback(
-    Output("adding-rows-table", "columns"),
-    [Input("adding-rows-button", "n_clicks")],
-    [State("adding-rows-table", "columns")],
-)
-def update_columns(n_clicks, existing_columns):
-    if n_clicks > 0:
-        count = 2 + n_clicks
-        counter = f"Y{count}"
-        existing_columns.append(
-            {"id": counter, "name": counter, "editable": True, "deletable": True}
-        )
-    return existing_columns
-
-
-@app.callback(
-    Output("adding-rows-graph", "figure"),
-    [
-        Input("adding-rows-table", "data"),
-        Input("adding-rows-table", "columns"),
-        Input("x-axis", "value"),
-        Input("y-axis", "value"),
-    ],
-)
-def update_graph(rows, columns, x_title, y_title):
-    """
-    Take user data and perform nonlinear regression to Michaelis-Menten model.
-    """
-
-    df = pandas.DataFrame(rows, columns=[c["name"] for c in columns])
-
-    x = df["X"].astype(float).values
-
-    # Clean up y data
-    ys = df.iloc[:, 1:]
+def clean_up_y_data(ys: pandas.DataFrame) -> Tuple[numpy.ndarray, List[float]]:
     ys = ys.replace("", 0)
     ys = ys.fillna(0)
     ys = ys.astype(float).values
     y = ys.mean(axis=1)
     y_std = ys.std(axis=1)
     y_std = [value if value > 0 else 0.00000001 for value in y_std]
-    # FIXME: fitting fails with zero std values; this is a kludge
+    # fitting fails with zero std values; this is a kludge
 
-    def equation(x, a, b):
-        return (a * x) / (b + x)
+    return (y, y_std)
 
+
+def equation(x: numpy.ndarray, a: float, b: float) -> numpy.ndarray:
+    return (a * x) / (b + x)
+
+
+def fit_data(
+    x: List[float], y: numpy.ndarray, y_std: List[float]
+) -> Tuple[numpy.ndarray, numpy.ndarray]:
     # Fit the equation
     variable_guesses = [numpy.max(y), numpy.min(y)]  # FIXME: better guesses!
     variables, cov = curve_fit(equation, x, y, p0=variable_guesses, sigma=y_std)
     var_errors = numpy.sqrt(numpy.diag(cov))
 
+    return (variables, var_errors)
+
+
+def find_r_squared(
+    x: numpy.ndarray, y: numpy.ndarray, variables: numpy.ndarray
+) -> float:
     residuals = y - equation(x, *variables)
     ss_res = numpy.sum(residuals ** 2)
     ss_tot = numpy.sum((y - numpy.mean(y)) ** 2)
     r_squared = 1 - (ss_res / ss_tot)
-    # r_squared = 1 - (
-    #     numpy.sum(y - equation(x, *variables)) / numpy.sum((y - numpy.mean(y)) ** 2)
-    # )
 
-    # Calculate useful range for plotting
-    x_range = numpy.arange(numpy.min(x), numpy.max(x), abs(numpy.max(x) / 100))
+    return r_squared
 
-    # Return plots and a data layout
-    plot1 = go.Scatter(
+
+def generate_plot1(
+    x: numpy.ndarray, y: numpy.ndarray, y_std: List[float]
+) -> go.Scatter:
+    return go.Scatter(
         x=x, y=y, mode="markers", error_y=dict(type="data", array=y_std, visible=True)
     )
-    plot2 = go.Scatter(x=x_range, y=equation(x_range, *variables), mode="lines")
-    plot_data = [plot1, plot2]
-    layout = go.Layout(
+
+
+def generate_plot2(x_range: numpy.ndarray, variables: numpy.ndarray) -> go.Scatter:
+    return go.Scatter(x=x_range, y=equation(x_range, *variables), mode="lines")
+
+
+def generate_layout(
+    r_squared: float,
+    variables: numpy.ndarray,
+    var_errors: numpy.ndarray,
+    x_title: str,
+    y_title: str,
+) -> go.Layout:
+    return go.Layout(
         title={"text": "Michaelis-Menten Fit", "font": {"family": "lato"}},
         # width=600,
         template="seaborn",
@@ -281,6 +258,76 @@ def update_graph(rows, columns, x_title, y_title):
         showlegend=False,
         margin={"t": 40, "r": 40, "l": 40, "b": 40},
     )
+
+
+@app.callback(
+    Output("adding-rows-table", "data"),
+    [Input("editing-rows-button", "n_clicks")],
+    [State("adding-rows-table", "data"), State("adding-rows-table", "columns")],
+)
+def add_row(
+    n_clicks: int,
+    rows: List[Dict[str, float]],
+    columns: List[Dict[str, Union[str, bool]]],
+) -> List[Dict[str, float]]:
+    if n_clicks > 0:
+        rows.append({c["id"]: 0 for c in columns})
+    return rows
+
+
+@app.callback(
+    Output("adding-rows-table", "columns"),
+    [Input("adding-rows-button", "n_clicks")],
+    [State("adding-rows-table", "columns")],
+)
+def update_columns(n_clicks: int, existing_columns):
+    if n_clicks > 0:
+        count = 2 + n_clicks
+        counter = f"Y{count}"
+        existing_columns.append(
+            {"id": counter, "name": counter, "editable": True, "deletable": True}
+        )
+    return existing_columns
+
+
+@app.callback(
+    Output("adding-rows-graph", "figure"),
+    [
+        Input("adding-rows-table", "data"),
+        Input("adding-rows-table", "columns"),
+        Input("x-axis", "value"),
+        Input("y-axis", "value"),
+    ],
+)
+def update_graph(rows, columns, x_title: str, y_title: str):
+    """
+    Take user data and perform nonlinear regression to Michaelis-Menten model.
+    """
+
+    df = pandas.DataFrame(rows, columns=[c["name"] for c in columns])
+
+    x = df["X"].astype(float).values
+
+    ys = df.iloc[:, 1:]  # all but X column
+    y, y_std = clean_up_y_data(ys)
+
+    variables, var_errors = fit_data(x, y, y_std)
+
+    r_squared = find_r_squared(x, y, variables)
+
+    # Calculate useful range for plotting
+    DEFAULT_INCREMENTS = 100
+    x_range = numpy.arange(
+        numpy.min(x), numpy.max(x), abs(numpy.max(x) / DEFAULT_INCREMENTS)
+    )
+
+    # Return plots and a data layout
+    plot1 = generate_plot1(x, y, y_std)
+    plot2 = generate_plot2(x_range, variables)
+    plot_data = [plot1, plot2]
+
+    layout = generate_layout(r_squared, variables, var_errors, x_title, y_title)
+
     return {"data": plot_data, "layout": layout}
 
 
