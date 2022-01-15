@@ -15,7 +15,10 @@ init_buffer_input = dbc.FormGroup(
     [
         dbc.Label("Initial Buffer Concentration", html_for="init-buffer"),
         dbc.Input(type="init-buffer", id="buff_init_conc", value="1.0"),
-        dbc.FormText("Input initial stock buffer concentration", color="secondary",),
+        dbc.FormText(
+            "Input initial stock buffer concentration",
+            color="secondary",
+        ),
     ]
 )
 
@@ -24,7 +27,8 @@ final_buffer_input = dbc.FormGroup(
         dbc.Label("Final Buffer Concentration", html_for="final-buffer"),
         dbc.Input(type="final-buffer", id="buff_final_conc", value="0.15"),
         dbc.FormText(
-            "Input final buffer concentration in the solution", color="secondary",
+            "Input final buffer concentration in the solution",
+            color="secondary",
         ),
     ]
 )
@@ -33,7 +37,10 @@ buffer_pka_input = dbc.FormGroup(
     [
         dbc.Label("Buffer pKa", html_for="buffer-pka"),
         dbc.Input(type="buffer-pka", id="buff_pka", value="8.0"),
-        dbc.FormText("Input buffer pKa", color="secondary",),
+        dbc.FormText(
+            "Input buffer pKa",
+            color="secondary",
+        ),
     ]
 )
 
@@ -42,7 +49,10 @@ final_vol_input = dbc.FormGroup(
     [
         dbc.Label("Final Solution Volume", html_for="final_vol"),
         dbc.Input(type="final_vol", id="final_volume", value="1.5"),
-        dbc.FormText("Input final solution volume (L)", color="secondary",),
+        dbc.FormText(
+            "Input final solution volume (L)",
+            color="secondary",
+        ),
     ]
 )
 
@@ -76,7 +86,10 @@ init_ph_input = dbc.FormGroup(
     [
         dbc.Label("Initial Buffer pH", html_for="init_ph"),
         dbc.Input(type="init_ph", id="init_ph", value="7.0"),
-        dbc.FormText("Input initial buffer pH", color="secondary",),
+        dbc.FormText(
+            "Input initial buffer pH",
+            color="secondary",
+        ),
     ]
 )
 
@@ -84,7 +97,10 @@ final_ph_input = dbc.FormGroup(
     [
         dbc.Label("Final Solution pH", html_for="final_ph"),
         dbc.Input(type="final_ph", id="final_ph", value="8.3"),
-        dbc.FormText("Input final solution pH", color="secondary",),
+        dbc.FormText(
+            "Input final solution pH",
+            color="secondary",
+        ),
     ]
 )
 
@@ -101,7 +117,24 @@ app.layout = dbc.Container(
                             dbc.CardHeader(html.H4("Buffer Titration Solving")),
                             dbc.CardBody(
                                 [
-                                    dbc.Row([dbc.Col(form1), dbc.Col(form2)]),
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                form1,
+                                                xs={"size": 12},
+                                                sm={"size": 12},
+                                                md={"size": 6},
+                                                lg={"size": 6},
+                                            ),
+                                            dbc.Col(
+                                                form2,
+                                                xs={"size": 12},
+                                                sm={"size": 12},
+                                                md={"size": 6},
+                                                lg={"size": 6},
+                                            ),
+                                        ]
+                                    ),
                                     dbc.Row(
                                         [
                                             dbc.Col(
@@ -123,7 +156,9 @@ app.layout = dbc.Container(
                                                         "Recipe:",
                                                         className="alert-heading",
                                                     ),
-                                                    html.Div(id="output-div",),
+                                                    html.Div(
+                                                        id="output-div",
+                                                    ),
                                                 ],
                                                 color="success",
                                                 style={"margin-top": "30px"},
@@ -138,10 +173,10 @@ app.layout = dbc.Container(
                         ],
                         className="shadow-lg border-primary mb-3",
                     ),
-                    xs={"size": 10},
+                    xs={"size": 12},
                     sm={"size": 10},
-                    md={"size": 8},
-                    lg={"size": 6},
+                    md={"size": 10},
+                    lg={"size": 8},
                 ),
             ],
             style={"padding-top": "50px"},
