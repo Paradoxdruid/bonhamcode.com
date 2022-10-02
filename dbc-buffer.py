@@ -201,7 +201,6 @@ app.layout = dbc.Container(
         State("naoh_conc", "value"),
         State("init_ph", "value"),
         State("final_ph", "value"),
-        State("recipe", "is_open"),
     ],
 )
 def Buffer_Solver(
@@ -214,7 +213,6 @@ def Buffer_Solver(
     NaOH_stock_conc,
     initial_pH,
     final_pH,
-    is_open,
 ):
     # Sanitize input and catch unusable input
     try:
