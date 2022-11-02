@@ -4,19 +4,18 @@
 Dash web app for fitting Michaelis-Menten enzyme kinetics.
 """
 
+from typing import Any, Dict, List, Tuple, Union
+
 # Imports
 import dash
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
-import dash_table
-import numpy
+import numpy as np
 import pandas
 import plotly.graph_objs as go
-from dash.dependencies import Input, Output, State
+from dash import Input, Output, State, dash_table, dcc, html
 from scipy.optimize import curve_fit
-from typing import Any, Tuple, Dict, List, Union
 
+NDArray = np.ndarray[Any, np.dtype[np.float64]]
 
 INITIAL_DATA: List[Dict[str, float]] = [
     {"X": 0.0, "Y1": 0.0, "Y2": 1.0},
@@ -39,7 +38,7 @@ app: dash.Dash = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 server: Any = app.server  # server initialization for passenger wsgi
 
 # Layout Widgets
-xaxis_label: dbc.FormGroup = dbc.FormGroup(
+xaxis_label: html.Div = html.Div(
     [
         dbc.Label("X-axis label:", className="mr-2"),
         dbc.Input(type="x-axis", id="x-axis", value="Concentration"),
@@ -47,7 +46,7 @@ xaxis_label: dbc.FormGroup = dbc.FormGroup(
     className="mr-3",
 )
 
-yaxis_label: dbc.FormGroup = dbc.FormGroup(
+yaxis_label: html.Div = html.Div(
     [
         dbc.Label("Y-axis label:", className="mr-2"),
         dbc.Input(type="y-axis", id="y-axis", value="Enzyme Activity"),
@@ -55,7 +54,7 @@ yaxis_label: dbc.FormGroup = dbc.FormGroup(
     className="mr-3",
 )
 
-input_form: dbc.Col = dbc.Col([dbc.Form([xaxis_label, yaxis_label], inline=True)])
+input_form: dbc.Col = dbc.Col([dbc.Form([xaxis_label, yaxis_label])])
 
 row_button: dbc.Col = dbc.Col(
     [
@@ -87,13 +86,21 @@ entry_table: dash_table.DataTable = dash_table.DataTable(
 table_input: dbc.Col = dbc.Col(
     [
         dbc.Card([entry_table], className="border-secondary p-2"),
-        dbc.Button("Add Row", id="editing-rows-button", n_clicks=0, className="mt-1",),
+        dbc.Button(
+            "Add Row",
+            id="editing-rows-button",
+            n_clicks=0,
+            className="mt-1",
+        ),
     ],
 )
 
 card_header: dbc.CardHeader = dbc.CardHeader(
     [
-        html.H3("Bonham Code: Michaelis-Menten Fitting", className="card-title",),
+        html.H3(
+            "Bonham Code: Michaelis-Menten Fitting",
+            className="card-title",
+        ),
         html.H6(
             "Input x and y data (with replicates) for Michaelis-Menten fitting",
             className="card-subtitle",
@@ -147,14 +154,14 @@ app.layout = dbc.Container(
 
 
 # Functions
-def clean_up_y_data(ys: pandas.DataFrame) -> Tuple[numpy.ndarray, List[float]]:
+def clean_up_y_data(ys: pandas.DataFrame) -> Tuple[NDArray, List[float]]:
     """Take user entered Y values and return average and std dev for plotting.
 
     Args:
         ys (pandas.DataFrame): user-entered y-value columns
 
     Returns:
-        Tuple[numpy.ndarray, List[float]]: average Y and std dev of Y values
+        Tuple[NDArray, List[float]]: average Y and std dev of Y values
     """
     ys = ys.replace("", 0)
     ys = ys.fillna(0)
@@ -167,69 +174,63 @@ def clean_up_y_data(ys: pandas.DataFrame) -> Tuple[numpy.ndarray, List[float]]:
     return (y, y_std)
 
 
-def equation(x: numpy.ndarray, vmax: float, km: float) -> numpy.ndarray:
+def equation(x: NDArray, vmax: float, km: float) -> NDArray:
     """Michaelis-Menten equation for testing and plotting.
 
     Args:
-        x (numpy.ndarray): x values
+        x (NDArray): x values
         vmax (float): guess or value for Vmax
         km (float): guess or value for Km
 
     Returns:
-        numpy.ndarray: return predicted y values
+        NDArray: return predicted y values
     """
     return (vmax * x) / (km + x)
 
 
-def fit_data(
-    x: List[float], y: numpy.ndarray, y_std: List[float]
-) -> Tuple[numpy.ndarray, numpy.ndarray]:
+def fit_data(x: NDArray, y: NDArray, y_std: List[float]) -> Tuple[NDArray, NDArray]:
     """Perform curve fitting against the average data.
 
     Args:
         x (List[float]): x values
-        y (numpy.ndarray): average y values
+        y (NDArray): average y values
         y_std (List[float]): y std dev values
 
     Returns:
-        Tuple[numpy.ndarray, numpy.ndarray]: fitting variables and associated errors
+        Tuple[NDArray, NDArray]: fitting variables and associated errors
     """
-    variable_guesses = [numpy.max(y), numpy.min(y)]  # FIXME: better guesses!
+    variable_guesses = [np.max(y), np.min(y)]  # FIXME: better guesses!
     variables, cov = curve_fit(equation, x, y, p0=variable_guesses, sigma=y_std)
-    var_errors: numpy.ndarray = numpy.sqrt(numpy.diag(cov))
+    var_errors: NDArray = np.sqrt(np.diag(cov))
 
     return (variables, var_errors)
 
 
-def find_r_squared(
-    x: numpy.ndarray, y: numpy.ndarray, variables: numpy.ndarray
-) -> float:
+def find_r_squared(x: NDArray, y: NDArray, variables: NDArray) -> float:
     """Find r squared value of fit
 
     Args:
-        x (numpy.ndarray): x values
-        y (numpy.ndarray): average y values
-        variables (numpy.ndarray): fitting variables
+        x (NDArray): x values
+        y (NDArray): average y values
+        variables (NDArray): fitting variables
 
     Returns:
         float: r squared value
     """
-    residuals: numpy.ndarray = y - equation(x, *variables)
-    ss_res: float = numpy.sum(residuals ** 2)
-    ss_tot: float = numpy.sum((y - numpy.mean(y)) ** 2)
+    residuals: NDArray = y - equation(x, *variables)
+    ss_res: float = np.sum(residuals**2)
+    ss_tot: float = np.sum((y - np.mean(y)) ** 2)
     r_squared: float = 1 - (ss_res / ss_tot)
 
     return r_squared
 
 
-def generate_plot1(
-    x: numpy.ndarray, y: numpy.ndarray, y_std: List[float]
-) -> go.Scatter:
+def generate_plot1(x: NDArray, y: NDArray, y_std: List[float]) -> go.Scatter:
     """Generate plot of actual average data.
 
     Args:
-        x (numpy.ndarray): x values
-        y (numpy.ndarray): average y values
+        x (NDArray): x values
+        y (NDArray): average y values
         y_std (List[float]): y std dev values
 
     Returns:
@@ -240,12 +241,12 @@ def generate_plot1(
     )
 
 
-def generate_plot2(x_range: numpy.ndarray, variables: numpy.ndarray) -> go.Scatter:
+def generate_plot2(x_range: NDArray, variables: NDArray) -> go.Scatter:
     """Generate plot of predicted Michaelis-Menten curve values.
 
     Args:
-        x_range (numpy.ndarray): evenly spaced range of x values
-        variables (numpy.ndarray): fitting variables
+        x_range (NDArray): evenly spaced range of x values
+        variables (NDArray): fitting variables
 
     Returns:
         go.Scatter: scatter plot of data
@@ -255,8 +256,8 @@ def generate_plot2(x_range: numpy.ndarray, variables: numpy.ndarray) -> go.Scatt
 
 def generate_graph_layout(
     r_squared: float,
-    variables: numpy.ndarray,
-    var_errors: numpy.ndarray,
+    variables: NDArray,
+    var_errors: NDArray,
     x_title: str,
     y_title: str,
 ) -> go.Layout:
@@ -264,8 +265,8 @@ def generate_graph_layout(
 
     Args:
         r_squared (float): r squared value
-        variables (numpy.ndarray): fitting variables
-        var_errors (numpy.ndarray): fitting variable errors
+        variables (NDArray): fitting variables
+        var_errors (NDArray): fitting variable errors
         x_title (str): x axis title
         y_title (str): y axis title
 
@@ -329,7 +330,7 @@ def generate_graph_layout(
     Output("adding-rows-table", "data"),
     [Input("editing-rows-button", "n_clicks")],
     [State("adding-rows-table", "data"), State("adding-rows-table", "columns")],
-)
+)  # type: ignore[misc]
 def add_row(
     n_clicks: int,
     rows: List[Dict[str, float]],
@@ -346,7 +347,7 @@ def add_row(
         List[Dict[str, float]]: rows with an additional row
     """
     if n_clicks > 0:
-        rows.append({c["id"]: 0.0 for c in columns})
+        rows.append({c["id"]: 0.0 for c in columns})  # type: ignore[misc]
     return rows
 
 
@@ -354,7 +355,7 @@ def add_row(
     Output("adding-rows-table", "columns"),
     [Input("adding-rows-button", "n_clicks")],
     [State("adding-rows-table", "columns")],
-)
+)  # type: ignore[misc]
 def update_columns(
     n_clicks: int, existing_columns: List[Dict[str, Union[str, bool]]]
 ) -> List[Dict[str, Union[str, bool]]]:
@@ -384,7 +385,7 @@ def update_columns(
         Input("x-axis", "value"),
         Input("y-axis", "value"),
     ],
-)
+)  # type: ignore[misc]
 def update_graph(
     rows: List[Dict[str, float]],
     columns: List[Dict[str, Union[str, bool]]],
@@ -405,7 +406,7 @@ def update_graph(
 
     df = pandas.DataFrame(rows, columns=[c["name"] for c in columns])
 
-    x: numpy.ndarray = df["X"].astype(float).values
+    x: NDArray = df["X"].astype(float).values
 
     ys: pandas.DataFrame = df.iloc[:, 1:]  # all but X column
     y, y_std = clean_up_y_data(ys)
@@ -416,8 +417,8 @@ def update_graph(
 
     # Calculate useful range for plotting
     DEFAULT_INCREMENTS: int = 100
-    x_range: numpy.ndarray = numpy.arange(
-        numpy.min(x), numpy.max(x), abs(numpy.max(x) / DEFAULT_INCREMENTS)
+    x_range: NDArray = np.arange(
+        np.min(x), np.max(x), abs(np.max(x) / DEFAULT_INCREMENTS)
     )
 
     # Return plots and a graph data layout

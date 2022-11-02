@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
 import dash
-
-# import dash_core_components as dcc
-import dash_html_components as html
 import dash_bootstrap_components as dbc
+from dash import html
 from dash.dependencies import Input, Output, State
 
 MyApp = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
@@ -47,7 +44,7 @@ footer = dbc.Row(
 )
 
 
-def make_card(name, explanation, link):
+def make_card(name: str, explanation: str, link: str) -> dbc.Card:
     return dbc.Card(
         [
             dbc.CardBody(
@@ -61,19 +58,25 @@ def make_card(name, explanation, link):
     )
 
 
-buffer_card = make_card(
+buffer_card: dbc.Card = make_card(
     "Buffer Adjustment Solver",
     "A calculator for adjusting pH and concentration of buffers from stock solutions",
     "https://buffer.bonhamcode.com",
 )
-menten_card = make_card(
+menten_card: dbc.Card = make_card(
     "Michaelis-Menten Fitting",
-    "Create interactive graphs that fit replicate data to the Michaelis-Menten kinetics equation",
+    (
+        "Create interactive graphs that fit replicate data"
+        " to the Michaelis-Menten kinetics equation"
+    ),
     "https://michaelis.bonhamcode.com",
 )
-dose_card = make_card(
+dose_card: dbc.Card = make_card(
     "Dose-Response Fitting",
-    "Create interactive graphs that fit data to a Langmuir-Isotherm reversible binding equation",
+    (
+        "Create interactive graphs that fit data to a"
+        " Langmuir-Isotherm reversible binding equation"
+    ),
     "https://doseresponse.bonhamcode.com",
 )
 
@@ -90,12 +93,11 @@ body_contents = html.Div(
 )
 
 # Create app layout
-nav_text = dbc.NavLink("Designed by", disabled=True, href="#")  # dbc.NavItem()
+nav_text = dbc.NavLink("Designed by", disabled=True, href="#")
 
 nav_item = dbc.NavLink("Dr. Andrew J. Bonham", href="https://github.com/Paradoxdruid")
-# dbc.NavItem()
 
-BONHAM_LOGO = MyApp.get_asset_url('bonham_logo.png')
+BONHAM_LOGO = MyApp.get_asset_url("bonham_logo.png")
 
 side_bar = dbc.Nav(
     [
@@ -110,7 +112,9 @@ navbar = dbc.Navbar(
     [
         dbc.Row(
             [
-                dbc.Col(html.Img(src=BONHAM_LOGO, height="60px"), className="mr-0", width=4),
+                dbc.Col(
+                    html.Img(src=BONHAM_LOGO, height="60px"), className="mr-0", width=4
+                ),
                 dbc.Col(dbc.NavbarBrand("Bonham Code", className="ml-0"), width=8),
             ],
             align="center",
@@ -124,10 +128,6 @@ navbar = dbc.Navbar(
 
 bottom_bar = dbc.NavbarSimple(
     children=[
-        dbc.NavLink(
-            "MSU Denver Covid Tracker", href="https://msu-covid-tracker.herokuapp.com"
-        ),
-        # dbc.NavLink("Bonham Code projects", href="https://bonhamcode.com"),
         dbc.NavLink("Dr. Bonham's Research Lab", href="https://www.bonhamlab.com"),
     ],
     brand="Other Projects:",
@@ -175,7 +175,10 @@ old_layout = dbc.Container(
                                 dbc.CardBody(body_contents),
                                 dbc.CardFooter(footer),
                             ],
-                            className="border-primary mb-3 border rounded bg-white shadow-lg",
+                            className=(
+                                "border-primary mb-3 border"
+                                " rounded bg-white shadow-lg"
+                            ),
                             style={"min-height": "25vh"},
                         ),
                     ],
@@ -199,8 +202,8 @@ old_layout = dbc.Container(
     Output("navbar-collapse", "is_open"),
     [Input("navbar-toggler", "n_clicks")],
     [State("navbar-collapse", "is_open")],
-)
-def toggle_navbar_collapse(n, is_open):
+)  # type: ignore[misc]
+def toggle_navbar_collapse(n: int, is_open: bool) -> bool:
     if n:
         return not is_open
     return is_open

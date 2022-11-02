@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from typing import Tuple
+
 import dash_bootstrap_components as dbc
 from dash import Dash, Input, Output, State, html
 
@@ -202,28 +204,28 @@ app.layout = dbc.Container(
         State("init_ph", "value"),
         State("final_ph", "value"),
     ],
-)
+)  # type: ignore[misc]
 def Buffer_Solver(
-    n_clicks,
-    buffer_conc_initial,
-    buffer_conc_final,
-    buffer_pKa,
-    total_volume,
-    HCl_stock_conc,
-    NaOH_stock_conc,
-    initial_pH,
-    final_pH,
-):
+    n_clicks: int,
+    _buffer_conc_initial: str,
+    _buffer_conc_final: str,
+    _buffer_pKa: str,
+    _total_volume: str,
+    _HCl_stock_conc: str,
+    _NaOH_stock_conc: str,
+    _initial_pH: str,
+    _final_pH: str,
+) -> Tuple[str, bool, str]:
     # Sanitize input and catch unusable input
     try:
-        buffer_conc_initial = float(buffer_conc_initial)
-        buffer_conc_final = float(buffer_conc_final)
-        buffer_pKa = float(buffer_pKa)
-        total_volume = float(total_volume)
-        HCl_stock_conc = float(HCl_stock_conc)
-        NaOH_stock_conc = float(NaOH_stock_conc)
-        initial_pH = float(initial_pH)
-        final_pH = float(final_pH)
+        buffer_conc_initial = float(_buffer_conc_initial)
+        buffer_conc_final = float(_buffer_conc_final)
+        buffer_pKa = float(_buffer_pKa)
+        total_volume = float(_total_volume)
+        HCl_stock_conc = float(_HCl_stock_conc)
+        NaOH_stock_conc = float(_NaOH_stock_conc)
+        initial_pH = float(_initial_pH)
+        final_pH = float(_final_pH)
     except ValueError:
         return "Invalid input values, try again", True, "warning"
 

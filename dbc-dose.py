@@ -4,23 +4,24 @@
 Dash web app for fitting dose-response data.
 """
 
+from typing import Any, Dict, List
+
 # Imports
 import dash
-from dash.dependencies import Input, Output, State
-import dash_core_components as dcc
-import dash_html_components as html
 import dash_bootstrap_components as dbc
-import numpy
-from scipy.optimize import leastsq
+import numpy as np
 import plotly.graph_objs as go
+from dash import Input, Output, State, dcc, html
+from scipy.optimize import leastsq
 
+NDArray = np.ndarray[Any, np.dtype[np.float64]]
 
 # Initialize app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 
 server = app.server  # server initialization for passenger wsgi
 
-xaxis_label = dbc.FormGroup(
+xaxis_label = html.Div(
     [
         dbc.Label("X values:", className="mr-2"),
         dbc.Input(type="input-1-state", id="input-1-state", value="0,1,2,3,4"),
@@ -28,7 +29,7 @@ xaxis_label = dbc.FormGroup(
     className="mr-3",
 )
 
-yaxis_label = dbc.FormGroup(
+yaxis_label = html.Div(
     [
         dbc.Label("Y values:", className="mr-2"),
         dbc.Input(type="input-2-state", id="input-2-state", value="1,2,5,8,9"),
@@ -50,7 +51,6 @@ input_form = dbc.Col(
                     className="mr-1",
                 ),
             ],
-            inline=True,
         ),
     ],
 )
@@ -163,13 +163,13 @@ old_layout = html.Div(
 
 
 # Functions
-def residuals(y, fitinfo):
+def residuals(y: NDArray, fitinfo: Dict[str, Any]) -> float:
     fit_error = 0
     fit_variance = 0
 
     for i in range(len(fitinfo["fvec"])):
         fit_error += (fitinfo["fvec"][i]) ** 2
-        fit_variance += (y[i] - numpy.mean(y)) ** 2
+        fit_variance += (y[i] - np.mean(y)) ** 2
     r_squared = 1 - (fit_error / fit_variance)
     return r_squared
 
@@ -178,29 +178,29 @@ def residuals(y, fitinfo):
     Output("indicator-graphic", "figure"),
     [Input("submit-button", "n_clicks")],
     [State("input-1-state", "value"), State("input-2-state", "value")],
-)
-def update_graph2(click, xs, ys):
+)  # type: ignore[misc]
+def update_graph2(click: int, xs: str, ys: str) -> Dict[str, Any]:
     if click == -1:
-        x = numpy.zeros(5)
-        y = numpy.zeros(5)
+        x = np.zeros(5)
+        y = np.zeros(5)
     else:
-        x = numpy.array(xs.split(","), dtype=float)
-        y = numpy.array(ys.split(","), dtype=float)
+        x = np.array(xs.split(","), dtype=float)
+        y = np.array(ys.split(","), dtype=float)
 
-    def equation(variables, x):
+    def equation(variables: List[float], x: NDArray) -> NDArray:
         return variables[0] + (
             (variables[1] - variables[0]) / (1 + 10 ** (variables[2] - x))
         )
 
-    def error(variables, x, y):
+    def error(variables: List[float], x: NDArray, y: NDArray) -> NDArray:
         return equation(variables, x) - y
 
-    variable_guesses = [numpy.min(y), numpy.max(y), numpy.mean(x)]
+    variable_guesses = [np.min(y), np.max(y), np.mean(x)]
     output = leastsq(error, variable_guesses, args=(x, y), full_output=1)
     variables = output[0]
     fitinfo = output[2]
     r_squared = residuals(y, fitinfo)
-    x_range = numpy.arange(numpy.min(x), numpy.max(x), abs(numpy.max(x) / 100))
+    x_range = np.arange(np.min(x), np.max(x), abs(np.max(x) / 100))
     plot1 = go.Scatter(x=x, y=y, mode="markers", showlegend=False)
     plot2 = go.Scatter(
         x=x_range, y=equation(variables, x_range), mode="lines", showlegend=False
