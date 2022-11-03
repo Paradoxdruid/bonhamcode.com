@@ -39,7 +39,7 @@ server: Any = app.server  # server initialization for passenger wsgi
 
 # Layout Widgets
 xaxis_label: html.Div = html.Div(
-    [
+    children=[
         dbc.Label("X-axis label:", className="mr-2"),
         dbc.Input(type="x-axis", id="x-axis", value="Concentration"),
     ],
@@ -47,17 +47,17 @@ xaxis_label: html.Div = html.Div(
 )
 
 yaxis_label: html.Div = html.Div(
-    [
+    children=[
         dbc.Label("Y-axis label:", className="mr-2"),
         dbc.Input(type="y-axis", id="y-axis", value="Enzyme Activity"),
     ],
     className="mr-3",
 )
 
-input_form: dbc.Col = dbc.Col([dbc.Form([xaxis_label, yaxis_label])])
+input_form: dbc.Col = dbc.Col([dbc.Form(children=[xaxis_label, yaxis_label])])
 
 row_button: dbc.Col = dbc.Col(
-    [
+    children=[
         dbc.Button(
             "Add Column",
             id="adding-rows-button",
@@ -84,8 +84,8 @@ entry_table: dash_table.DataTable = dash_table.DataTable(
 )
 
 table_input: dbc.Col = dbc.Col(
-    [
-        dbc.Card([entry_table], className="border-secondary p-2"),
+    children=[
+        dbc.Card(children=[entry_table], className="border-secondary p-2"),
         dbc.Button(
             "Add Row",
             id="editing-rows-button",
@@ -96,7 +96,7 @@ table_input: dbc.Col = dbc.Col(
 )
 
 card_header: dbc.CardHeader = dbc.CardHeader(
-    [
+    children=[
         html.H3(
             "Bonham Code: Michaelis-Menten Fitting",
             className="card-title",
@@ -109,25 +109,27 @@ card_header: dbc.CardHeader = dbc.CardHeader(
 )
 
 graph_output: dbc.Col = dbc.Col(
-    [
+    children=[
         dbc.Card(
-            [dcc.Graph(id="adding-rows-graph", config={"displayModeBar": True})],
+            children=[
+                dcc.Graph(id="adding-rows-graph", config={"displayModeBar": True})
+            ],
             className="mt-3 border-primary p-1",
         ),
     ]
 )
 
 app.layout = dbc.Container(
-    [
+    children=[
         dbc.Row(
-            [
+            children=[
                 dbc.Col(
-                    [
+                    children=[
                         dbc.Card(
-                            [
+                            children=[
                                 card_header,
                                 dbc.CardBody(
-                                    [
+                                    children=[
                                         dbc.Row([input_form]),
                                         dbc.Row([row_button]),
                                         dbc.Row([table_input]),
