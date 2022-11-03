@@ -1,7 +1,6 @@
 import dash
 import dash_bootstrap_components as dbc
-from dash import html
-from dash.dependencies import Input, Output, State
+from dash import Input, Output, State, html
 
 MyApp = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 
@@ -12,10 +11,10 @@ server = MyApp.server
 layout_title = html.H4("Bonham Code")
 
 footer = dbc.Row(
-    [
+    children=[
         dbc.Col(
             html.P(
-                [
+                children=[
                     "Visit ",
                     html.A(
                         "Bonham Chemistry",
@@ -28,7 +27,7 @@ footer = dbc.Row(
         ),
         dbc.Col(
             html.P(
-                [
+                children=[
                     "Designed by ",
                     html.A(
                         "Dr. Andrew J. Bonham",
@@ -46,9 +45,9 @@ footer = dbc.Row(
 
 def make_card(name: str, explanation: str, link: str) -> dbc.Card:
     return dbc.Card(
-        [
+        children=[
             dbc.CardBody(
-                [
+                children=[
                     html.H5(name, className="card-title"),
                     html.P(explanation, className="card-text"),
                     dbc.Button("Try it", color="primary", className="mr-1", href=link),
@@ -83,7 +82,7 @@ dose_card: dbc.Card = make_card(
 body_contents = html.Div(
     [
         dbc.Row(
-            [
+            children=[
                 dbc.Col(buffer_card),
                 dbc.Col(menten_card),
                 dbc.Col(dose_card),
@@ -100,7 +99,7 @@ nav_item = dbc.NavLink("Dr. Andrew J. Bonham", href="https://github.com/Paradoxd
 BONHAM_LOGO = MyApp.get_asset_url("bonham_logo.png")
 
 side_bar = dbc.Nav(
-    [
+    children=[
         dbc.NavItem(nav_text),
         dbc.NavItem(nav_item),
     ],
@@ -109,9 +108,9 @@ side_bar = dbc.Nav(
 )
 
 navbar = dbc.Navbar(
-    [
+    children=[
         dbc.Row(
-            [
+            children=[
                 dbc.Col(
                     html.Img(src=BONHAM_LOGO, height="60px"), className="mr-0", width=4
                 ),
@@ -137,7 +136,7 @@ bottom_bar = dbc.NavbarSimple(
 )
 
 MyApp.layout = html.Div(
-    [
+    children=[
         navbar,
         dbc.Container(
             fluid=True,
@@ -145,7 +144,7 @@ MyApp.layout = html.Div(
                 dbc.Row(
                     dbc.Col(
                         html.Div(
-                            [body_contents],
+                            children=[body_contents],
                             className="m-3",
                         ),
                         width=12,
@@ -164,13 +163,13 @@ MyApp.layout = html.Div(
 
 
 old_layout = dbc.Container(
-    [
+    children=[
         dbc.Row(
-            [
+            children=[
                 dbc.Col(
-                    [
+                    children=[
                         dbc.Card(
-                            [
+                            children=[
                                 dbc.CardHeader(layout_title),
                                 dbc.CardBody(body_contents),
                                 dbc.CardFooter(footer),
