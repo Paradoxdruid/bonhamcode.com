@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from typing import Tuple
 
 import dash_bootstrap_components as dbc
@@ -11,7 +10,7 @@ server = app.server  # Export server for use by Passenger framework
 
 # Components for Layout
 init_buffer_input = dbc.Row(
-    [
+    children=[
         dbc.Label("Initial Buffer Concentration", html_for="init-buffer"),
         dbc.Input(type="init-buffer", id="buff_init_conc", value="1.0"),
         dbc.FormText(
@@ -22,7 +21,7 @@ init_buffer_input = dbc.Row(
 )
 
 final_buffer_input = dbc.Row(
-    [
+    children=[
         dbc.Label("Final Buffer Concentration", html_for="final-buffer"),
         dbc.Input(type="final-buffer", id="buff_final_conc", value="0.15"),
         dbc.FormText(
@@ -33,7 +32,7 @@ final_buffer_input = dbc.Row(
 )
 
 buffer_pka_input = dbc.Row(
-    [
+    children=[
         dbc.Label("Buffer pKa", html_for="buffer-pka"),
         dbc.Input(type="buffer-pka", id="buff_pka", value="8.0"),
         dbc.FormText(
@@ -45,7 +44,7 @@ buffer_pka_input = dbc.Row(
 
 
 final_vol_input = dbc.Row(
-    [
+    children=[
         dbc.Label("Final Solution Volume", html_for="final_vol"),
         dbc.Input(type="final_vol", id="final_volume", value="1.5"),
         dbc.FormText(
@@ -56,11 +55,11 @@ final_vol_input = dbc.Row(
 )
 
 form1 = dbc.Form(
-    [init_buffer_input, final_buffer_input, buffer_pka_input, final_vol_input]
+    children=[init_buffer_input, final_buffer_input, buffer_pka_input, final_vol_input]
 )
 
 hcl_conc_input = dbc.Row(
-    [
+    children=[
         dbc.Label("Stock HCl concentration", html_for="hcl_conc"),
         dbc.Input(type="hcl_conc", id="hcl_conc", value="12.0"),
         dbc.FormText(
@@ -71,7 +70,7 @@ hcl_conc_input = dbc.Row(
 )
 
 naoh_conc_input = dbc.Row(
-    [
+    children=[
         dbc.Label("Stock NaOH concentration", html_for="naoh_conc"),
         dbc.Input(type="naoh_conc", id="naoh_conc", value="10.0"),
         dbc.FormText(
@@ -82,7 +81,7 @@ naoh_conc_input = dbc.Row(
 )
 
 init_ph_input = dbc.Row(
-    [
+    children=[
         dbc.Label("Initial Buffer pH", html_for="init_ph"),
         dbc.Input(type="init_ph", id="init_ph", value="7.0"),
         dbc.FormText(
@@ -93,7 +92,7 @@ init_ph_input = dbc.Row(
 )
 
 final_ph_input = dbc.Row(
-    [
+    children=[
         dbc.Label("Final Solution pH", html_for="final_ph"),
         dbc.Input(type="final_ph", id="final_ph", value="8.3"),
         dbc.FormText(
@@ -103,21 +102,23 @@ final_ph_input = dbc.Row(
     ]
 )
 
-form2 = dbc.Form([hcl_conc_input, naoh_conc_input, init_ph_input, final_ph_input])
+form2 = dbc.Form(
+    children=[hcl_conc_input, naoh_conc_input, init_ph_input, final_ph_input]
+)
 
 # App layout using dash-bootstrap-components
 app.layout = dbc.Container(
-    [
+    children=[
         dbc.Row(
-            [
+            children=[
                 dbc.Col(
                     dbc.Card(
-                        [
+                        children=[
                             dbc.CardHeader(html.H4("Buffer Titration Solving")),
                             dbc.CardBody(
-                                [
+                                children=[
                                     dbc.Row(
-                                        [
+                                        children=[
                                             dbc.Col(
                                                 form1,
                                                 xs={"size": 12},
@@ -135,9 +136,9 @@ app.layout = dbc.Container(
                                         ]
                                     ),
                                     dbc.Row(
-                                        [
+                                        children=[
                                             dbc.Col(
-                                                [
+                                                children=[
                                                     dbc.Button(
                                                         "Submit",
                                                         id="submit-button",
@@ -150,7 +151,7 @@ app.layout = dbc.Container(
                                     dbc.Row(
                                         dbc.Col(
                                             dbc.Alert(
-                                                [
+                                                children=[
                                                     html.H4(
                                                         "Recipe:",
                                                         className="alert-heading",
