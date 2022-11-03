@@ -22,7 +22,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 server = app.server  # server initialization for passenger wsgi
 
 xaxis_label = html.Div(
-    [
+    children=[
         dbc.Label("X values:", className="mr-2"),
         dbc.Input(type="input-1-state", id="input-1-state", value="0,1,2,3,4"),
     ],
@@ -30,7 +30,7 @@ xaxis_label = html.Div(
 )
 
 yaxis_label = html.Div(
-    [
+    children=[
         dbc.Label("Y values:", className="mr-2"),
         dbc.Input(type="input-2-state", id="input-2-state", value="1,2,5,8,9"),
     ],
@@ -38,9 +38,9 @@ yaxis_label = html.Div(
 )
 
 input_form = dbc.Col(
-    [
+    children=[
         dbc.Form(
-            [
+            children=[
                 xaxis_label,
                 yaxis_label,
                 dbc.Button(
@@ -56,7 +56,7 @@ input_form = dbc.Col(
 )
 
 card_header = dbc.CardHeader(
-    [
+    children=[
         html.H3(
             "Bonham Code: Dose Response Fitting",
             className="card-title",
@@ -69,9 +69,9 @@ card_header = dbc.CardHeader(
 )
 
 graph_output = dbc.Col(
-    [
+    children=[
         dbc.Card(
-            [
+            children=[
                 dcc.Graph(
                     id="indicator-graphic",
                     config={"displayModeBar": True},
@@ -83,10 +83,10 @@ graph_output = dbc.Col(
 )
 
 card_footer = dbc.Row(
-    [
+    children=[
         dbc.Col(
             html.P(
-                [
+                children=[
                     "Visit ",
                     html.A(
                         "Bonham Chemistry",
@@ -99,7 +99,7 @@ card_footer = dbc.Row(
         ),
         dbc.Col(
             html.P(
-                [
+                children=[
                     "Designed by ",
                     html.A(
                         "Dr. Andrew J. Bonham",
@@ -116,16 +116,16 @@ card_footer = dbc.Row(
 
 
 app.layout = dbc.Container(
-    [
+    children=[
         dbc.Row(
-            [
+            children=[
                 dbc.Col(
-                    [
+                    children=[
                         dbc.Card(
-                            [
+                            children=[
                                 card_header,
                                 dbc.CardBody(
-                                    [
+                                    children=[
                                         dbc.Row([input_form]),
                                         dbc.Row([graph_output]),
                                     ],
@@ -151,7 +151,7 @@ app.layout = dbc.Container(
 
 
 old_layout = html.Div(
-    [
+    children=[
         html.Button(
             id="submit-button",
             n_clicks=0,
