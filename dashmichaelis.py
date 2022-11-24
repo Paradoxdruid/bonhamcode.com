@@ -285,7 +285,7 @@ def generate_graph_layout(
                 y=0.5,
                 xref="paper",
                 yref="paper",
-                text="R squared = {}".format(round(r_squared, 3)),
+                text=f"R squared = {round(r_squared, 3)}",
                 showarrow=False,
             ),
             dict(
@@ -293,7 +293,7 @@ def generate_graph_layout(
                 y=0.44,
                 xref="paper",
                 yref="paper",
-                text="Km = {0:0.3e} \u00B1 {1:0.3e}".format(
+                text="Km = {:0.3e} \u00B1 {:0.3e}".format(
                     variables[1], var_errors[1]
                 ),
                 showarrow=False,
@@ -303,7 +303,7 @@ def generate_graph_layout(
                 y=0.38,
                 xref="paper",
                 yref="paper",
-                text="Vmax = {0:0.3e} \u00B1 {1:0.3e}".format(
+                text="Vmax = {:0.3e} \u00B1 {:0.3e}".format(
                     variables[0], var_errors[0]
                 ),
                 showarrow=False,

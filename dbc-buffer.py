@@ -281,8 +281,8 @@ def Buffer_Solver(
     else:
         return (
             (
-                "Buffer recipe: add {0} liters stock buffer, "
-                "{1} liters of stock {2}, and {3} liters of water."
+                "Buffer recipe: add {} liters stock buffer, "
+                "{} liters of stock {}, and {} liters of water."
             ).format(
                 round(buffer_volume, 4),
                 round(volume_titrant, 4),

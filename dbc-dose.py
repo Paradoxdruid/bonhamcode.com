@@ -216,7 +216,7 @@ def update_graph2(click: int, xs: str, ys: str) -> Dict[str, Any]:
                 y=0.9,
                 xref="paper",
                 yref="paper",
-                text="R squared = {}".format(round(r_squared, 3)),
+                text=f"R squared = {round(r_squared, 3)}",
                 showarrow=False,
             ),
             dict(
@@ -224,7 +224,7 @@ def update_graph2(click: int, xs: str, ys: str) -> Dict[str, Any]:
                 y=0.85,
                 xref="paper",
                 yref="paper",
-                text="Kd = {}".format(round(variables[2], 3)),
+                text=f"Kd = {round(variables[2], 3)}",
                 showarrow=False,
             ),
         ],
