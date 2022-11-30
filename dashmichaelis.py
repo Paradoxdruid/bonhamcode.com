@@ -293,9 +293,7 @@ def generate_graph_layout(
                 y=0.44,
                 xref="paper",
                 yref="paper",
-                text="Km = {:0.3e} \u00B1 {:0.3e}".format(
-                    variables[1], var_errors[1]
-                ),
+                text=f"Km = {variables[1]:0.3e} \u00B1 {var_errors[1]:0.3e}",
                 showarrow=False,
             ),
             dict(
