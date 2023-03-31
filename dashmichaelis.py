@@ -239,7 +239,10 @@ def generate_plot1(x: NDArray, y: NDArray, y_std: List[float]) -> go.Scatter:
         go.Scatter: scatter plot of data
     """
     return go.Scatter(
-        x=x, y=y, mode="markers", error_y=dict(type="data", array=y_std, visible=True)
+        x=x,
+        y=y,
+        mode="markers",
+        error_y={"type": "data", "array": y_std, "visible": True},
     )
 
 
@@ -280,47 +283,47 @@ def generate_graph_layout(
         # width=600,
         template="seaborn",
         annotations=[
-            dict(
-                x=0.5,
-                y=0.5,
-                xref="paper",
-                yref="paper",
-                text=f"R squared = {round(r_squared, 3)}",
-                showarrow=False,
-            ),
-            dict(
-                x=0.5,
-                y=0.44,
-                xref="paper",
-                yref="paper",
-                text=f"Km = {variables[1]:0.3e} \u00B1 {var_errors[1]:0.3e}",
-                showarrow=False,
-            ),
-            dict(
-                x=0.5,
-                y=0.38,
-                xref="paper",
-                yref="paper",
-                text="Vmax = {:0.3e} \u00B1 {:0.3e}".format(
+            {
+                "x": 0.5,
+                "y": 0.5,
+                "xref": "paper",
+                "yref": "paper",
+                "text": f"R squared = {round(r_squared, 3)}",
+                "showarrow": False,
+            },
+            {
+                "x": 0.5,
+                "y": 0.44,
+                "xref": "paper",
+                "yref": "paper",
+                "text": f"Km = {variables[1]:0.3e} \u00B1 {var_errors[1]:0.3e}",
+                "showarrow": False,
+            },
+            {
+                "x": 0.5,
+                "y": 0.38,
+                "xref": "paper",
+                "yref": "paper",
+                "text": "Vmax = {:0.3e} \u00B1 {:0.3e}".format(
                     variables[0], var_errors[0]
                 ),
-                showarrow=False,
-            ),
+                "showarrow": False,
+            },
         ],
-        xaxis=dict(
-            title=x_title,
-            showline=True,
-            linewidth=1,
-            linecolor="black",
-            titlefont=dict(family="lato"),
-        ),
-        yaxis=dict(
-            title=y_title,
-            showline=True,
-            linewidth=1,
-            linecolor="black",
-            titlefont=dict(family="lato"),
-        ),
+        xaxis={
+            "title": x_title,
+            "showline": True,
+            "linewidth": 1,
+            "linecolor": "black",
+            "titlefont": {"family": "lato"},
+        },
+        yaxis={
+            "title": y_title,
+            "showline": True,
+            "linewidth": 1,
+            "linecolor": "black",
+            "titlefont": {"family": "lato"},
+        },
         showlegend=False,
         margin={"t": 40, "r": 40, "l": 40, "b": 40},
     )

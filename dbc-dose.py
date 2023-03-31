@@ -211,25 +211,25 @@ def update_graph2(click: int, xs: str, ys: str) -> Dict[str, Any]:
         # width=600,
         template="ggplot2",
         annotations=[
-            dict(
-                x=0.5,
-                y=0.9,
-                xref="paper",
-                yref="paper",
-                text=f"R squared = {round(r_squared, 3)}",
-                showarrow=False,
-            ),
-            dict(
-                x=0.5,
-                y=0.85,
-                xref="paper",
-                yref="paper",
-                text=f"Kd = {round(variables[2], 3)}",
-                showarrow=False,
-            ),
+            {
+                "x": 0.5,
+                "y": 0.9,
+                "xref": "paper",
+                "yref": "paper",
+                "text": f"R squared = {round(r_squared, 3)}",
+                "showarrow": False,
+            },
+            {
+                "x": 0.5,
+                "y": 0.85,
+                "xref": "paper",
+                "yref": "paper",
+                "text": f"Kd = {round(variables[2], 3)}",
+                "showarrow": False,
+            },
         ],
-        xaxis=dict(title="Concentration"),
-        yaxis=dict(title="Response"),
+        xaxis={"title": "Concentration"},
+        yaxis={"title": "Response"},
     )
     return {"data": plot_data, "layout": layout}
 
